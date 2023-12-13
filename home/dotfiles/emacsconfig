@@ -1,0 +1,116 @@
+;; Steven's .emacs files w/ explanations
+;;
+;; Goal:
+;; - provide a reasonable Emacs configuration to my liking
+;; - make it easy to share and let others learn from
+;; - explain all code snippets and interactions
+
+;; This adds the third party MELPA packaging to our Emacs package system
+;; Emacs uses a standard, and very strict packaging site called ELPA
+;; sometimes packages don't exist on ELPA and instead exist on MELPA
+;; as a community package list. For more extensive packages,
+;; check out MELPA and append MELPA to your own Emacs
+(require 'package)
+(add-to-list 'package-archives
+	     '("melpa" . "https://melpa.org/packages/") t)
+;; you can choose to delete this line if it makes emacs too slow
+(package-initialize)
+
+
+;; Defining your deps is important because it aims to reproduce a build
+;; that is easy to share and re-use across installations.
+(setq deps '(eglot zig-mode spacemacs-theme evil neotree racket-mode
+		   evil-search-highlight-persist evil-visual-mark-mode
+		   smex ido-vertical-mode
+		   rainbow-delimiters smartparens
+           janet-mode
+		   ))
+
+;; Set auto-saves to exist in the home directory (and not with your code)
+(setq backup-directory-alist '(("." . "~/.emacs-saves")))
+
+;; Set the tab-character width (\t) to be 4 (to match mostly every proglang's standard)
+(setq-default tab-width 4)
+
+;; Remove tabs, I hate tabs!!!!!111
+(setq-default indent-tabs-mode nil)
+
+;; Emacs doesn't have a great way of installing deps from scratch,
+;; so a custom function like this is a little required to use
+(defun install-all-deps ()
+  "Install all your custom dependencies"
+  (interactive) ; mark it as an emacs function
+  (package-refresh-contents) ; download fresh pkg lists from mirrors
+  (mapcar #'package-install deps)) ; map #<package-install> over your deps list
+
+
+;; Turn off the scrolling menu bar, as it is rather ugly
+; (menu-bar-mode -1)
+(scroll-bar-mode -1)
+; (tool-bar-mode -1) ; turns off top menu bar for copy/paste/file/etc
+
+;; column number mode
+(column-number-mode t)
+
+
+;; This will set your default theme
+;; To change your theme, download custom packages and try them out
+;; Then change the target to whatever symbol represents the theme pkg
+;(require 'spacemacs-theme)
+(load-theme 'spacemacs-dark t)
+
+;; This will turn on evil, a vim interactive mode for emacs
+;; Deleting this will forego vim keybindings in emacs
+(require 'evil)
+(evil-mode 1)
+
+
+(require 'smex)
+(require 'ido)
+(ido-mode 1)
+(ido-vertical-mode 1)
+(smex-initialize)
+(global-set-key (kbd "M-x") 'smex)
+
+(prefer-coding-system 'utf-8-unix)
+
+
+;; Eglot is the new and fancy LSP that is coming to Emacs 29
+;; For versions under v29, you can install Eglot through ELPA/MELPA
+;; You can configure it to use certain LSP programs you have by adding
+;; it to each individual writing mode you have configured
+;; eg. for zig-mode, I attach a program "zls"
+;; (use the absolute path to your LSP programs)
+(require 'eglot)
+(add-to-list 'eglot-server-programs
+             '(zig-mode . ("/home/steve/.local/bin/zls")))
+
+
+;; This is a keybinding to add Neotree as a simple command
+;; The command involves using C-x t to bring open the file window
+;; This is akin to directory viewers in some IDEs
+(require 'neotree)
+(global-set-key (kbd "C-x t") 'neotree-toggle)
+(global-set-key (kbd "C-x w") 'whitespace-mode)
+
+(add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
+(add-hook 'prog-mode-hook #'hl-line-mode)
+(add-hook 'prog-mode-hook #'smartparens-mode)
+
+
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(column-number-mode t)
+ '(custom-safe-themes
+   '("79586dc4eb374231af28bbc36ba0880ed8e270249b07f814b0e6555bdcb71fab" "bffa9739ce0752a37d9b1eee78fc00ba159748f50dc328af4be661484848e476" default))
+ '(package-selected-packages
+   '(janet-mode ido-vertical-mode smex evil-visual-mark-mode evil-search-highlight-persist magit smartparens rainbow-delimiters racket-mode markdown-mode darcula-theme python-mode evil neotree spacemacs-theme zig-mode eglot)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(default ((t (:family "DejaVu Sans Mono" :foundry "PfEd" :slant normal :weight regular :height 120 :width normal)))))
