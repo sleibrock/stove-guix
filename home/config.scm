@@ -56,8 +56,10 @@
         'env-vars home-environment-variables-service-type
         `(("MOZ_ENABLE_WAYLAND" . "1")
           ("GTK_THEME" . "Arc-Dark")
+          ("SDL_VIDEODRIVER" . "wayland")
           ("SWAY_ROOT" . ,#~(string-append #$sway ""))
           ("PLASMA_WP" . ,#~(string-append #$plasma-wp ""))
+          ("_JAVA_AWT_WM_NONREPARENTING" . "1")
           ("GTK2_RC_FILES" .
            ,#~(string-append #$arc-theme
                              "/share/themes/Arc-Dark/gtk-2.0/gtkrc"))

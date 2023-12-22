@@ -111,6 +111,8 @@ output * bg $PLASMA_WP/share/wallpapers/ColdRipple/contents/images/1920x1080.jpg
 
     bindsym XF86MonBrightnessUp exec brightnessctl set +5%
     bindsym XF86MonBrightnessDown exec brightnessctl set 5%-
+    bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +5%
+    bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -5%
 #
 # Workspaces:
 #
