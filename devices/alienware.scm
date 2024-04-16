@@ -87,6 +87,13 @@
  ;; elogind         - login init system
  ;; docker          - docker-related stuff (process autostart)
  ;; %base-services  - default, minimal linux services to append to
+ ;;
+ ;; Note: this is done inside a `modify-services` call
+ ;; because we need to add substitute URLs to the base
+ ;; substitute server list along with a signing key.
+ ;; Substitute servers are used for pre-built binaries
+ ;; ie so we don't have to spend our time compiling big
+ ;; annoying things like the kernel or Firefox
  (services
   (modify-services
    (cons*
@@ -106,11 +113,16 @@
              %default-substitute-urls))
      (authorized-keys
       (cons*
-       ;; needs Nonguix's signing key stored somewhere
-       ;; modify to where you store it
-       (local-file "/etc/signing-key.pub")
-       %default-authorized-guix-keys))))
-   ))
+       ;; This is Nonguix's public key
+       ;; We will store it here instead of going a separate file route
+       (plain-file "non-guix.pub"
+                   "(public-key
+ (ecc
+  (curve Ed25519)
+  (q #C1FD53E5D4CE971933EC50C9F307AE2171A2D3B52C804642A7A35F84F3A4EA98#)
+  )
+ )")
+       %default-authorized-guix-keys))))))
 
  ;; Bootloader section
  ;; Configure to match your partitioning / BIOS setup
