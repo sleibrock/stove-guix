@@ -24,8 +24,6 @@
  ;; System setup
  ;; kernel   - by default this uses a libre Linux kernel with free only code
  ;;          - we change this to use the kernel from nongnu channel
- ;; Kernel   - this implies to use the mainline Linux kernel
- ;;          - from nongnu, otherwise it uses a libre/free kernel
  ;; initrd   - microcode patches for CPUs that are nonfree
  ;; firmware - same story...
  ;; locale   - change to your language
@@ -98,7 +96,19 @@
     (service cups-service-type)
     (service elogind-service-type (elogind-configuration))
     (service docker-service-type))
-   %base-services))
+
+   ;; Very complicated method of adding substitute servers
+   ;; See https://gitlab.com/nonguix/nonguix for more info
+   (modify-services %base-services
+    (guix-service-type => (guix-configuration
+      (inherit config)
+      (substitute-urls
+       (append
+        (list "https://substitutes.nonguix.org")
+        %default-substitute-urls))
+      (authorized-keys
+       (append (list (local-file "/home/steve/signing-key.pub"))
+               %default-authorized-guix-keys)))))))
 
  ;; Bootloader section
  ;; Configure to match your partitioning / BIOS setup
