@@ -88,27 +88,29 @@
  ;; docker          - docker-related stuff (process autostart)
  ;; %base-services  - default, minimal linux services to append to
  (services
-  (append
-   (list
+  (modify-services
+   (cons*
     (service network-manager-service-type)
     (service wpa-supplicant-service-type)
     (service openssh-service-type)
     (service cups-service-type)
     (service elogind-service-type (elogind-configuration))
-    (service docker-service-type))
-
-   ;; Very complicated method of adding substitute servers
-   ;; See https://gitlab.com/nonguix/nonguix for more info
-   (modify-services %base-services
-    (guix-service-type => (guix-configuration
-      (inherit config)
-      (substitute-urls
-       (append
-        (list "https://substitutes.nonguix.org")
-        %default-substitute-urls))
-      (authorized-keys
-       (append (list (local-file "/home/steve/signing-key.pub"))
-               %default-authorized-guix-keys)))))))
+    (service docker-service-type)
+    %base-services)
+  
+   (guix-service-type config =>
+    (guix-configuration
+     (inherit config)
+     (substitute-urls
+      (cons* "https://substitutes.nonguix.org"
+             %default-substitute-urls))
+     (authorized-keys
+      (cons*
+       ;; needs Nonguix's signing key stored somewhere
+       ;; modify to where you store it
+       (local-file "/etc/signing-key.pub")
+       %default-authorized-guix-keys))))
+   ))
 
  ;; Bootloader section
  ;; Configure to match your partitioning / BIOS setup
