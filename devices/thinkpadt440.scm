@@ -30,7 +30,7 @@
   (packages
    (cons*
     (map specification->packages
-         '("sway" "i3status" "dmenu" "rofi" "gvfs" "nss-certs"))
+         '("sway" "i3status" "dmenu" "rofi" "gvfs"))
     %base-packages))
 
   ;; Service section

@@ -55,7 +55,6 @@
  
  ;; Packages
  ;; These packages are installed system-wide for all users
- ;; nss-certs - signing purposes
  ;; gvfs      - volume management
  ;; neovim    - modern vim replacement
  ;; git       - git
@@ -73,7 +72,7 @@
  (packages
   (append
    (map specification->package
-        '("nss-certs" "gvfs" "neovim" "git" "ruby" "racket"
+        '("gvfs" "neovim" "git" "ruby" "racket"
           "python" "htop" "docker" "gcc-toolchain" "tmux"
           ))
    %base-packages))

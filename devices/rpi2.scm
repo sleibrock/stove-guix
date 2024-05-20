@@ -25,8 +25,7 @@
  (packages
   (cons*
    (map specification->packages
-        '("vim" "python" "ruby" "janet" "racket" "ghc"
-          "nss-certs" "gvfs"))
+        '("vim" "python" "ruby" "janet" "racket" "ghc" "gvfs"))
    %base-packages))
 
  (services
