@@ -19,7 +19,7 @@
 
 
 ;; Operating system function to generate a functional OS
-;; from a single definition. 
+;; from a single definition.
 (operating-system
  ;; System setup
  ;; kernel   - by default this uses a libre Linux kernel with free only code
@@ -52,9 +52,10 @@
     (home-directory "/home/steve")
     (supplementary-groups '("wheel" "netdev" "audio" "video" "docker")))
    %base-user-accounts))
- 
+
  ;; Packages
  ;; These packages are installed system-wide for all users
+ ;; nss-certs - signing purposes
  ;; gvfs      - volume management
  ;; neovim    - modern vim replacement
  ;; git       - git
@@ -72,11 +73,13 @@
  (packages
   (append
    (map specification->package
-        '("gvfs" "neovim" "git" "ruby" "racket"
-          "python" "htop" "docker" "gcc-toolchain" "tmux"
+        '("udisks" "gvfs" "neovim" "git" "ruby" "racket"
+          "curl" "openssl" "ntfs-3g" "make" "zip" "unzip"
+          "python" "htop" "docker" "containerd" "gcc-toolchain"
+          "tmux"
           ))
    %base-packages))
- 
+
  ;; Services list
  ;; List of services and explanations why:
  ;; network-manager - for internet / nm-applet
@@ -84,15 +87,9 @@
  ;; openssh-service - autostart sshd service
  ;; cups-service    - printing, who cares
  ;; elogind         - login init system
+ ;; containerd      - needed for Docker
  ;; docker          - docker-related stuff (process autostart)
  ;; %base-services  - default, minimal linux services to append to
- ;;
- ;; Note: this is done inside a `modify-services` call
- ;; because we need to add substitute URLs to the base
- ;; substitute server list along with a signing key.
- ;; Substitute servers are used for pre-built binaries
- ;; ie so we don't have to spend our time compiling big
- ;; annoying things like the kernel or Firefox
  (services
   (modify-services
    (cons*
@@ -101,9 +98,10 @@
     (service openssh-service-type)
     (service cups-service-type)
     (service elogind-service-type (elogind-configuration))
+    (service containerd-service-type)
     (service docker-service-type)
     %base-services)
-  
+
    (guix-service-type config =>
     (guix-configuration
      (inherit config)
@@ -112,8 +110,8 @@
              %default-substitute-urls))
      (authorized-keys
       (cons*
-       ;; This is Nonguix's public key
-       ;; We will store it here instead of going a separate file route
+       ;; needs Nonguix's signing key stored somewhere
+       ;; modify to where you store it
        (plain-file "non-guix.pub"
                    "(public-key
  (ecc
@@ -121,7 +119,8 @@
   (q #C1FD53E5D4CE971933EC50C9F307AE2171A2D3B52C804642A7A35F84F3A4EA98#)
   )
  )")
-       %default-authorized-guix-keys))))))
+       %default-authorized-guix-keys))))
+   ))
 
  ;; Bootloader section
  ;; Configure to match your partitioning / BIOS setup
@@ -137,7 +136,7 @@
    (swap-space
     (target
      (uuid "cc10f5d0-ef06-4dfb-b9f1-a9991badeb16")))))
- 
+
  ;; File systems
  ;; These systems will get "mounted" by default
  ;; Change to match your partitioned drives UUIDs / vol types
